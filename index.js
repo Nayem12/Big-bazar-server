@@ -19,7 +19,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 function verifyJWT(req, res, next) {
   const userAuth = req.headers?.authorization;
-  console.log(first)
+  // console.log(first)
   if (!userAuth) {
     return res.status(401).send('Unauthorized Access')
   }
@@ -124,7 +124,7 @@ async function run() {
 
 
     // get all adertised items 
-    app.get('/advertisedItem', async (req, res) => {
+    app.get('/advertisedItem', verifyJWT, async (req, res) => {
       const query = {
         advertise: 'advertised'
       }
@@ -182,7 +182,7 @@ async function run() {
       const query = { email: email }
       const user = await userCollection.findOne(query);
       if (user) {
-        const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' })
+        const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '1d' })
         return res.send({ accessToken: token })
       }
       console.log(user)
@@ -254,12 +254,12 @@ async function run() {
 
     //  get all sellers 
     app.get('/allseller', verifyJWT, async (req, res) => {
-      const decodedEmail = req.decoded.email;
-      const adminemail = { email: decodedEmail };
-      const user = await userCollection.findOne(adminemail);
-      if (user?.accountType !== 'Admin') {
-        return res.status(403).send({ message: 'forbidden access' });
-      }
+      // const decodedEmail = req.decoded.email;
+      // const adminemail = { email: decodedEmail };
+      // const user = await userCollection.find({});
+      // if (user?.accountType !== 'Admin') {
+      //   return res.status(403).send({ message: 'forbidden access' });
+      // }
 
       const query = {
         accountType: 'Seller'
@@ -377,12 +377,12 @@ async function run() {
     // get all buyers
     app.get('/allbuyers', verifyJWT, async (req, res) => {
 
-      const decodedEmail = req.decoded.email;
-      const adminemail = { email: decodedEmail };
-      const user = await userCollection.findOne(adminemail);
-      if (user?.accountType !== 'Admin') {
-        return res.status(403).send({ message: 'forbidden access' });
-      }
+      // const decodedEmail = req.decoded.email;
+      // const adminemail = { email: decodedEmail };
+      // const user = await userCollection.findOne(adminemail);
+      // if (user?.accountType !== 'Admin') {
+      //   return res.status(403).send({ message: 'forbidden access' });
+      // }
 
       const query = {
         accountType: 'Buyer'
@@ -449,7 +449,7 @@ async function run() {
 
 
     //  get categories 
-    app.get('/categories', async (req, res) => {
+    app.get('/categories', verifyJWT, async (req, res) => {
       const query = {}
       const category = await categoryCollection.find(query).toArray();
       res.send(category);
@@ -457,7 +457,7 @@ async function run() {
     })
 
     //  get selected category item
-    app.get('/category/:id', async (req, res) => {
+    app.get('/category/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) }
       const categoryItems = await categoryCollection.findOne(query);
@@ -467,7 +467,7 @@ async function run() {
 
     //  get products by category
 
-    app.get('/products/:category', async (req, res) => {
+    app.get('/products/:category', verifyJWT, async (req, res) => {
       const category = req.params.category;
       const query = {
         category: category
@@ -479,7 +479,7 @@ async function run() {
       res.send(matchedData)
     })
 
-    app.get('/allproducts', async (req, res) => {
+    app.get('/allproducts', verifyJWT, async (req, res) => {
       const allproducts = await productsCollection.find({}).toArray()
       res.send(allproducts)
     })
