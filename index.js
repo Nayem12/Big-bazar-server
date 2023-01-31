@@ -19,7 +19,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 function verifyJWT(req, res, next) {
   const userAuth = req.headers?.authorization;
-  // console.log(first)
+  console.log(userAuth)
   if (!userAuth) {
     return res.status(401).send('Unauthorized Access')
   }
@@ -124,7 +124,7 @@ async function run() {
 
 
     // get all adertised items 
-    app.get('/advertisedItem', verifyJWT, async (req, res) => {
+    app.get('/advertisedItem', async (req, res) => {
       const query = {
         advertise: 'advertised'
       }
@@ -449,7 +449,7 @@ async function run() {
 
 
     //  get categories 
-    app.get('/categories', verifyJWT, async (req, res) => {
+    app.get('/categories', async (req, res) => {
       const query = {}
       const category = await categoryCollection.find(query).toArray();
       res.send(category);
@@ -457,7 +457,7 @@ async function run() {
     })
 
     //  get selected category item
-    app.get('/category/:id', verifyJWT, async (req, res) => {
+    app.get('/category/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) }
       const categoryItems = await categoryCollection.findOne(query);
@@ -467,7 +467,7 @@ async function run() {
 
     //  get products by category
 
-    app.get('/products/:category', verifyJWT, async (req, res) => {
+    app.get('/products/:category', async (req, res) => {
       const category = req.params.category;
       const query = {
         category: category
@@ -479,7 +479,7 @@ async function run() {
       res.send(matchedData)
     })
 
-    app.get('/allproducts', verifyJWT, async (req, res) => {
+    app.get('/allproducts', async (req, res) => {
       const allproducts = await productsCollection.find({}).toArray()
       res.send(allproducts)
     })
